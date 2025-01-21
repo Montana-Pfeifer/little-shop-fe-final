@@ -11,10 +11,12 @@ const itemsNavButton = document.querySelector("#items-nav")
 const addNewButton = document.querySelector("#add-new-button")
 const showingText = document.querySelector("#showing-text")
 
+
 //Form elements
 const merchantForm = document.querySelector("#new-merchant-form")
 const newMerchantName = document.querySelector("#new-merchant-name")
 const submitMerchantButton = document.querySelector("#submit-merchant")
+const couponContainer = document.querySelector("#coupon-container")
 
 // Event Listeners
 merchantsView.addEventListener('click', (event) => {
@@ -139,31 +141,33 @@ function submitMerchant(event) {
 
 // Functions that control the view 
 function showMerchantsView() {
-  showingText.innerText = "All Merchants"
-  addRemoveActiveNav(merchantsNavButton, itemsNavButton)
-  addNewButton.dataset.state = 'merchant'
-  show([merchantsView, addNewButton])
-  hide([itemsView])
-  displayMerchants(merchants)
+  showingText.innerText = "All Merchants";
+  
+  addRemoveActiveNav(merchantsNavButton, itemsNavButton);
+  addNewButton.dataset.state = 'merchant';
+  show([merchantsView, addNewButton]);
+  hide([itemsView, couponsView]);
+  displayMerchants(merchants);
 }
 
 function showItemsView() {
-  showingText.innerText = "All Items"
-  addRemoveActiveNav(itemsNavButton, merchantsNavButton)
-  addNewButton.dataset.state = 'item'
-  show([itemsView])
-  hide([merchantsView, merchantForm, addNewButton, couponsView])
-  displayItems(items)
+  showingText.innerText = "All Items";
+  addRemoveActiveNav(itemsNavButton, merchantsNavButton); 
+  addNewButton.dataset.state = 'item';
+  show([itemsView]);
+  hide([merchantsView, merchantForm, addNewButton, couponsView]);
+  displayItems(items);
 }
 
 function showMerchantItemsView(id, items) {
-  showingText.innerText = `All Items for Merchant #${id}`
-  show([itemsView])
-  hide([merchantsView, addNewButton, couponsView])
-  addRemoveActiveNav(itemsNavButton, merchantsNavButton)
-  addNewButton.dataset.state = 'item'
-  displayItems(items)
+  showingText.innerText = `All Items for Merchant #${id}`;
+  show([itemsView]);
+  hide([merchantsView, addNewButton, couponsView]);
+  addRemoveActiveNav(itemsNavButton, merchantsNavButton);
+  addNewButton.dataset.state = 'item';
+  displayItems(items);
 }
+
 
 // Functions that add data to the DOM
 function displayItems(items) {
@@ -239,22 +243,21 @@ function getMerchantCoupons(event) {
     .then(couponData => {
     
       if (couponData.data && Array.isArray(couponData.data) && couponData.data.length > 0) {
-   
+        showingText.textContent = `All Coupons for Merchant #${merchantId}`
         displayMerchantCoupons(couponData.data);
       } else {
        
         showStatus('No coupons available for this merchant.', false);
       }
     })
+    
 }
 
 
-
-
 function displayMerchantCoupons(coupons) {
-  const couponContainer = document.querySelector("#coupon-container");
+  
   couponContainer.innerHTML = ""; 
-
+  
   coupons.forEach((coupon) => {
     couponContainer.innerHTML += `
       <div class="coupon">
@@ -268,6 +271,8 @@ function displayMerchantCoupons(coupons) {
       </div>
     `;
   });
+
+  hide([addNewButton]);
 
   show([couponsView]);
   hide([merchantsView, itemsView]);
