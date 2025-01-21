@@ -233,24 +233,48 @@ function displayMerchantItems(event) {
 }
 
 function getMerchantCoupons(event) {
-  let merchantId = event.target.closest("article").id.split('-')[1]
-  console.log("Merchant ID:", merchantId)
+  let merchantId = event.target.closest("article").id.split('-')[1];
 
-  fetchData(`merchants/${merchantId}`)
-  .then(couponData => {
-    console.log("Coupon data from fetch:", couponData)
-    displayMerchantCoupons(couponData);
-  })
+  fetchData(`merchants/${merchantId}/coupons`)
+    .then(couponData => {
+    
+      if (couponData.data && Array.isArray(couponData.data) && couponData.data.length > 0) {
+   
+        displayMerchantCoupons(couponData.data);
+      } else {
+       
+        showStatus('No coupons available for this merchant.', false);
+      }
+    })
 }
+
+
+
 
 function displayMerchantCoupons(coupons) {
-  show([couponsView])
-  hide([merchantsView, itemsView])
+  const couponContainer = document.querySelector("#coupon-container");
+  couponContainer.innerHTML = ""; 
 
-  couponsView.innerHTML = `
-    <p>Coupon data will go here.</p>
-  `
+  coupons.forEach((coupon) => {
+    couponContainer.innerHTML += `
+      <div class="coupon">
+        <h3>${coupon.attributes.name}</h3>
+        <p>${coupon.attributes.code}</p>
+        <p>${coupon.attributes.discount_type}</p>
+        <p>${coupon.attributes.value}</p>
+        <p>${coupon.attributes.status}</p>
+        <p>${coupon.attributes.merchant}</p>
+        <p>${coupon.attributes.usage_count}</p>
+      </div>
+    `;
+  });
+
+  show([couponsView]);
+  hide([merchantsView, itemsView]);
 }
+
+
+
 
 //Helper Functions
 function show(elements) {
